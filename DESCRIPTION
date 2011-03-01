@@ -1,0 +1,13 @@
+Package: RXMPP
+Version: 0.0.1
+Date: 2011-03-1
+Title: XMPP for R (RXMPP)
+Author: David Lawrence Miller <dave@ninepointeightone.net> 
+Maintainer: David Lawrence Miller <dave@ninepointeightone.net> 
+Description: This library implements the XMPP instant messaging protocol
+             in R.
+            
+             See the README file for installation instructions!
+Depends: R (>= 2.11.0)
+LazyLoad: yes
+License: GPL version 2 or later
