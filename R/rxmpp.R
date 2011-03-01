@@ -1,8 +1,8 @@
 # RXMPP
 
 # get the settings and set up the connection object
-shout_settings<-function(username, password=NULL, recipient=NULL, server="talk.google.com", 
-                        test.message="This is a test of RXMPP."){
+shout_settings<-function(username, password=NULL, test.message="This is a test of RXMPP.",
+                        recipient=NULL, server="talk.google.com"){
 
    # if the password is NULL then ask for it
    if(is.null(password) & .Platform$OS.type!="windows"){
@@ -18,8 +18,14 @@ shout_settings<-function(username, password=NULL, recipient=NULL, server="talk.g
    conn<-list(username=username,password=password)
 
 
-   # check that works
-   test<-shout(test.message,recipient,conn)
+   # check that this works
+   if(!is.null(test.message)){
+      # assume we're sending messages to ourself if recipient is NULL
+      if(is.null(recipient)){
+         recipient<-username
+      }
+      test<-shout(test.message,recipient,conn)
+   }
 
    # return the connection object
    return(conn)
@@ -27,7 +33,12 @@ shout_settings<-function(username, password=NULL, recipient=NULL, server="talk.g
 }
 
 # actually connect and send a message
-shout<-function(message,recipient,conn){
+shout<-function(message,conn,recipient){
+
+   # assume we're sending messages to ourself if recipient is NULL
+   if(is.null(recipient)){
+      recipient<-conn$username
+   }
 
    # load the library
    library.dynam("wocky-message",package=c("RXMPP"))
