@@ -4,12 +4,15 @@
 shout_settings<-function(username, password=NULL, recipient=NULL, server="talk.google.com", 
                         test.message="This is a test of RXMPP."){
 
-   ## this echoes the password back at the moment -- BAD
-   ## if the password is NULL then ask for it
-   #if(is.null(password)){
-   #   cat("No password supplied.\nPassword:")
-   #   password<-readLines(n=1)
-   #}
+   # if the password is NULL then ask for it
+   if(is.null(password) & .Platform$OS.type!="windows"){
+      cat("No password supplied.\n")
+      password<-get_password()
+   }else if(.Platform$OS.type=="windows"){
+      cat("No password supplied AND you're running Windows\n")
+      cat("Supply your password as an argument to shout_settings()\n")
+      cat("(This wouldn't be a problem if you had a Mac or Linux box...)\n")
+   }
 
    # create connection object
    conn<-list(username=username,password=password)
@@ -26,15 +29,29 @@ shout_settings<-function(username, password=NULL, recipient=NULL, server="talk.g
 # actually connect and send a message
 shout<-function(message,recipient,conn){
 
-   # send the message using conn
-   dyn.load("wocky-message")
+   # load the library
+   library.dynam("wocky-message",package=c("RXMPP"))
    
+   # send the message using conn
    send_obj<-.C("rxmpp_send",
                 in_jid=as.character(conn$username),
                 in_password=as.character(conn$password),
                 in_recipient=as.character(recipient),
                 in_message=as.character(message))
    
-   dyn.unload("wocky-message")
+   # unload the library
+   library.dynam.unload("wocky-message",paste(.libPaths()[1],"/RXMPP",sep=""))
 
 }
+
+# with thanks to Noah at StackOverflow
+# http://stackoverflow.com/questions/5154335/reading-user-input-without-echoing-it-r
+get_password <- function() {
+   cat("Password: ")
+   system("stty -echo")
+   a <- readline()
+   system("stty echo")
+   cat("\n")
+   return(a)
+}
+
